@@ -1,2 +1,2 @@
 # FourierSeries
-A generic algorithm to generate Fourier series evaluation drawing the approximated function.
+A generic algorithm for Fourier series evaluation and drawing the approximated function.
