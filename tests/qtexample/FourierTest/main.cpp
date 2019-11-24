@@ -12,6 +12,7 @@ int main(int argc, char *argv[])
     terms.emplace_back((1.+2.i)*t1);
     terms.emplace_back(FTerm{50,3});
     w.addFourierTerm(terms);
+    w.setDrawMode(FourierWidget::DrawXY);
     w.show();
 
     return a.exec();
