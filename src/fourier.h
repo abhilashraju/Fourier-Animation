@@ -50,7 +50,7 @@ struct PointF
    template<typename STreamer>
    friend STreamer& operator << (STreamer& os,const PointF& pt)
    {
-       cout<<"PointF{" << pt.mx<<"," <<pt.my<<"}";
+       os<<"PointF{" << pt.mx<<"," <<pt.my<<"}";
        return os;
    }
 };

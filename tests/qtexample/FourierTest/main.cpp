@@ -28,7 +28,11 @@ int main(int argc, char *argv[])
 //        return v1.amp < v2.amp;
 //    });
     w.addFourierTerm(terms);
+
+    //uncomment any of following line to see different drawing mode.
     w.setDrawMode(FourierWidget::DrawY);
+//    w.setDrawMode(FourierWidget::DrawX);
+//    w.setDrawMode(FourierWidget::DrawXY);
     w.show();
 
     return a.exec();
