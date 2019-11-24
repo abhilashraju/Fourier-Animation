@@ -94,7 +94,7 @@ struct FTerm
 };
 template <typename Range,typename DrawFun>
 auto FT(const Range& r, const FType& start, double time,DrawFun fun ){
-       return  std::reduce(begin(r),end(r),start,[&](auto& pos, auto& term){
+       return  std::accumulate(begin(r),end(r),start,[&](auto& pos, auto& term){
                  auto c = (pos+term)(time);
                  fun(pos,c,term.amp);
                  return c;
