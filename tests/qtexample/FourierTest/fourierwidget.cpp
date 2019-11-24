@@ -13,7 +13,7 @@ FourierWidget::FourierWidget(QWidget *parent) :
     timer.start();
 
 
-    resize(1000,700);
+
 }
 FourierWidget::~FourierWidget()
 {
