@@ -13,5 +13,9 @@ int main(int argc, char *argv[])
            std::cout<<" Inner Circle: "<<epiccirle << " center: " << center << " pointAt time 0.05: " << pointAt << " amplitude: " <<amp<<"\n";
            epiccirle++;
        });
+       
+       //symbolic expression 
+       auto v=FType{10,10} +t1 + std::polar(2.,PI/2.) * t1 + (1.+2.i)*t1 + FTerm{50,3};
+       std::cout<<v(0.05);
        return 0;
 }

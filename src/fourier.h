@@ -26,6 +26,7 @@ SOFTWARE.
 #include <complex>
 #include <numeric>
 #include <iostream>
+#include <functional>
 using namespace std;
 using namespace std::complex_literals;
 const auto PI = acos(-1);
@@ -93,12 +94,17 @@ struct FTerm
     }
 };
 template <typename Range,typename DrawFun>
-auto FT(const Range& r, const FType& start, double time,DrawFun fun ){
+auto FT(const Range& r, const FType& start, FReal time,DrawFun fun ){
        return  std::accumulate(begin(r),end(r),start,[&](auto& pos, auto& term){
                  auto c = (pos+term)(time);
                  fun(pos,c,term.amp);
                  return c;
              });
 }
-
+using FSymbol = std::function<FType(FReal)>;
+inline FSymbol operator +(FSymbol sym, FTerm term){
+    return [sym = std::move(sym),term=std::move(term)](FReal time){
+        return sym(time) + term * time;
+    };
+}
 #endif // FOURIER_H
