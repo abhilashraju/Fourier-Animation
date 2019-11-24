@@ -23,6 +23,10 @@ int main(int argc, char *argv[])
 
         terms.emplace_back(FTerm{radius*4/(n*PI),  n});
     }
+    //uncomment below line and try different sorting parameters to prove that the order of term does not matter.
+//    std::sort(begin(terms),end(terms),[](auto& v1, auto& v2){
+//        return v1.amp < v2.amp;
+//    });
     w.addFourierTerm(terms);
     w.setDrawMode(FourierWidget::DrawY);
     w.show();
