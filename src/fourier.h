@@ -59,12 +59,15 @@ struct PointF
 using FReal = double;
 using FComplex = complex<FReal>;
 using FType = PointF<FReal>;
+
+
+
 struct FTerm
 {
     FReal amp{1.};
     FReal freq{1.};
     FReal startangle{0};
-
+    FTerm(FReal a,FReal f=1,FReal p=0):amp(a),freq(f),startangle(p){}
     friend FType operator * (const FTerm& term,FReal t)
     {
         return term.amp* FType{cos(term.startangle+Tou* term.freq* t),sin(term.startangle+Tou * term.freq* t)};
@@ -106,5 +109,82 @@ inline FSymbol operator +(FSymbol sym, FTerm term){
     return [sym = std::move(sym),term=std::move(term)](FReal time){
         return sym(time) + term * time;
     };
+}
+
+namespace  FourierLiterals{
+struct FFreq
+{
+    long double f;
+};
+struct FAmp
+{
+    long double amp;
+};
+FFreq operator"" _f(long double v){
+    return {v};
+}
+FAmp operator"" _a(long double v){
+    return {v};
+}
+FFreq operator"" _F(long double v){
+    return {v};
+}
+FAmp operator"" _A(long double v){
+    return {v};
+}
+FTerm operator *(FAmp amp , FFreq f){
+    FReal a= amp.amp;
+    FReal fr=f.f;
+    return  FTerm{a,fr};
+}
+FAmp operator * (FAmp a,FReal v){
+    return {a.amp * v};
+}
+FAmp operator * (FReal v,FAmp a){
+    return a * v;
+}
+FAmp operator / (FAmp a,FReal v){
+    return {a.amp / v};
+}
+FAmp operator / (FReal v,FAmp a){
+    return {v/a.amp};
+}
+FAmp operator + (FAmp a,FReal v){
+    return {a.amp + v};
+}
+FAmp operator + (FReal v,FAmp a){
+    return a + v;
+}
+FAmp operator - (FAmp a,FReal v){
+    return {a.amp - v};
+}
+FAmp operator - (FReal v,FAmp a){
+    return {v-a.amp};
+}
+
+FFreq operator * (FFreq f,FReal v){
+    return {f.f * v};
+}
+FFreq operator * (FReal v,FFreq f){
+    return f * v;
+}
+FFreq operator / (FFreq f,FReal v){
+    return {f.f / v};
+}
+FFreq operator / (FReal v,FFreq a){
+    return {v/a.f};
+}
+FFreq operator + (FFreq a,FReal v){
+    return {a.f + v};
+}
+FFreq operator + (FReal v,FFreq a){
+    return {a.f + v};
+}
+FFreq operator - (FFreq a,FReal v){
+    return {a.f - v};
+}
+FFreq operator - (FReal v,FFreq a){
+    return {v-a.f};
+}
 }
 #endif // FOURIER_H
