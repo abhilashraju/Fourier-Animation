@@ -7,6 +7,9 @@
 #include <QPainter>
 #include <QDebug>
 using namespace FourierLiterals;
+
+
+
 struct Widget:public QWidget{
 
     QTimer timer;
@@ -14,13 +17,13 @@ struct Widget:public QWidget{
     FReal time{0.};
     Widget(){
 //        FTerm t1{50,1.};
-//        auto v=FType{300,300} +t1 + std::polar(2.,PI/2.) * t1 + (1.+2.i)*t1 + FTerm{50,3};
-        //auto v=FType{300,300} +FTerm{50,1} + FTerm{50,-1} + std::polar(2.,PI/2.) * FTerm{50,-1} + std::polar(2.,PI/4.) * FTerm{50,5};
-        auto v = FType(300,300)+ 50._A*4/PI * 1._F + 50._a*4/(3*PI) * 3._F + 50._A*4/(5*PI) * 5._F;
+//      auto v=t1 + std::polar(2.,PI/2.) * t1 + (1.+2.i)*t1 + FTerm{50,3};
+        auto v =  50._A*4/PI * 1._F + 50._a*4/(3*PI) * 3._F + 50._A*4/(5*PI) * 5._F;
+
         timer.connect(&timer,&QTimer::timeout,[=](){
             time+=0.01;
 
-            targetWave.emplace_front(v(time));
+            targetWave.emplace_front(FType(300,300)+ v(time));
             if(targetWave.size()>500){
                 targetWave.erase(targetWave.end()-1);
 
