@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 
     //square wave.
     std::vector<FTerm> terms;
-    FReal radius=50.;
+    FReal radius=100.;
     for(int i =0;i<10;i++){
         FReal n=2.*i+1.;
 

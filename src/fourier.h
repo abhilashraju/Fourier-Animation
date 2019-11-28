@@ -60,6 +60,23 @@ using FReal = double;
 using FComplex = complex<FReal>;
 using FType = PointF<FReal>;
 
+struct FInterpolator
+{
+    FReal mTime{0.0};
+    std::function<void(FType,FType,FReal)> mFunc;
+
+    FReal time()const{
+        return  mTime;
+    }
+    void operator()(FType center, FType poinTAtPer,FReal amp)const{
+        if(mFunc)
+            mFunc(center,poinTAtPer,amp);
+    }
+    FInterpolator(FReal time,std::function<void(FType,FType,FReal)> func=std::function<void(FType,FType,FReal)>())
+        :mTime(time),mFunc(func){
+
+    }
+};
 
 
 struct FTerm
@@ -80,8 +97,13 @@ struct FTerm
     }
     friend auto operator + (const FTerm& term1,const FTerm& term2)
     {
-        return [=](FReal t){
-            return term1*t + term2 * t;
+        return [=](FInterpolator ip){
+            auto center = term1*ip.time();
+            auto per=  center + term2 * ip.time();
+            ip(FType{0.0,0.0},center,term1.amp);
+            ip(center,per,term2.amp);
+            return per;
+
         };
     }
     friend auto operator + (const FTerm& term,const FType& pos)
@@ -110,10 +132,15 @@ auto FT(const Range& r, const FType& start, FReal time,DrawFun fun ){
                  return c;
              });
 }
-using FSymbol = std::function<FType(FReal)>;
+
+
+using FSymbol = std::function<FType( FInterpolator )>;
 inline FSymbol operator +(FSymbol sym, FTerm term){
-    return [sym = std::move(sym),term=std::move(term)](FReal time){
-        return sym(time) + term * time;
+    return [sym = std::move(sym),term=std::move(term)]( FInterpolator ip){
+        auto center = sym(ip);
+        auto per=  center + term * ip.time();
+        ip(center,per,term.amp);
+        return per;
     };
 }
 

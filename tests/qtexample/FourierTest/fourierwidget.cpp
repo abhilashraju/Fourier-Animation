@@ -1,15 +1,16 @@
 #include "fourierwidget.h"
 #include <QPainter>
+
 FourierWidget::FourierWidget(QWidget *parent) :
     QWidget(parent)
 
 {
     timer.connect(&timer,&QTimer::timeout,[=](){
-        time+=0.01;
+        time+=0.005;
         update();
     });
     timer.setSingleShot(false);
-    timer.setInterval(30ms);
+    timer.setInterval(16ms);
     timer.start();
 
 
@@ -23,12 +24,14 @@ void FourierWidget::paintEvent(QPaintEvent *event)
 {
 
     QPainter p(this);
-    p.fillRect(rect(),Qt::black);
+    p.fillRect(rect(),Qt::white);
 
 
 
-    QPointF middle = QPointF(250,height()/2);
-    p.setPen(Qt::white);
+    QPointF middle = QPointF(300,height()/2);
+    QPen pen(Qt::green);
+    pen.setWidth(2);
+    p.setPen(pen);
     targetWave.emplace_front(FT(terms,{middle.x(),middle.y()},time,[&](auto start,auto r,auto amp)->void{
             p.drawEllipse(QPointF{start.x(),start.y()},amp,amp);
             p.drawLine(QPointF{start.x(),start.y()},QPointF{r.x(),r.y()});
@@ -38,6 +41,9 @@ void FourierWidget::paintEvent(QPaintEvent *event)
         targetWave.erase(targetWave.end()-1);
 
     }
+    pen.setColor(Qt::red);
+
+    p.setPen(pen);
     QPainterPath path;
     switch (dmode) {
     case DrawXY:{
@@ -52,7 +58,7 @@ void FourierWidget::paintEvent(QPaintEvent *event)
     case DrawY:{
 
             path.moveTo(targetWave.front().x(),targetWave.front().y());
-            auto start=QPointF{middle.x()+100,targetWave.front().y()};
+            auto start=QPointF{middle.x()+150,targetWave.front().y()};
             path.lineTo(start);
             for(auto& pos:targetWave){
                 path.addEllipse(QPointF{start.x(),pos.y()},2,2);
@@ -63,7 +69,7 @@ void FourierWidget::paintEvent(QPaintEvent *event)
     case DrawX:{
 
             path.moveTo(targetWave.front().x(),targetWave.front().y());
-            auto start=QPointF{targetWave.front().x(),middle.y()+100};
+            auto start=QPointF{targetWave.front().x(),middle.y()+150};
             path.lineTo(start);
             for(auto& pos:targetWave){
                 path.addEllipse(QPointF{pos.x(),start.y()},2,2);
