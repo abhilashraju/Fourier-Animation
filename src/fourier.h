@@ -158,10 +158,10 @@ auto IFT(const R& data){
           for(auto j=0; j<t; j++){
               auto phi = Tou * f * j/t;
               type += FType(v * cos(phi),-v * sin(phi));
-
           }
-          type = type * (1./(FReal)t);
-          terms.emplace_back(FTerm{type.amplitude(),f,type.phase()});
+          type = type * (1./1.);
+
+          terms.emplace_back(FTerm{type.amplitude(),f/Tou,type.phase()});
           f++;
 
     }
