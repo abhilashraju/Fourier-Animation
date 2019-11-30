@@ -29,6 +29,9 @@ SOURCES += \
 
 
 INCLUDEPATH +=../../../src/
+
+INCLUDEPATH +=C:/Users/rabhil/work/json/single_include/
+INCLUDEPATH +=C:/Users/rabhil/work/json/include/
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

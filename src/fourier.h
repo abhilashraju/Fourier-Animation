@@ -42,7 +42,10 @@ struct PointF
    PointF(double x,double y):mx(x),my(y){}
    T x()const {return mx;}
    T y()const {return my;}
-   friend PointF operator * (double v, const PointF& pt){
+   friend PointF operator * (T v, const PointF& pt){
+       return PointF{pt.mx * v,pt.my *v};
+   }
+   friend PointF operator * (const PointF& pt ,T v ){
        return PointF{pt.mx * v,pt.my *v};
    }
    friend PointF operator + (const PointF& pt1, const PointF& pt2){
@@ -53,6 +56,15 @@ struct PointF
    {
        os<<"PointF{" << pt.mx<<"," <<pt.my<<"}";
        return os;
+   }
+   void operator +=(const PointF& o){
+       *this = *this + o;
+   }
+   T amplitude()const {
+       return sqrt(mx*mx + my*my);
+   }
+   T phase()const {
+       return atan2(my,mx);
    }
 };
 
@@ -133,7 +145,28 @@ auto FT(const Range& r, const FType& start, FReal time,DrawFun fun ){
              });
 }
 
+template <typename R>
+auto IFT(const R& data){
+    using DF = typename R::difference_type;
+    DF t{std::distance(begin(data),end(data))};
+    std::vector<FTerm> terms;
+    FReal f{0.0};
+    for(auto v:data)
+    {
 
+        FType type{0.,0.};
+          for(auto j=0; j<t; j++){
+              auto phi = Tou * f * j/t;
+              type += FType(v * cos(phi),-v * sin(phi));
+
+          }
+          type = type * (1./(FReal)t);
+          terms.emplace_back(FTerm{type.amplitude(),f,type.phase()});
+          f++;
+
+    }
+    return terms;
+}
 using FSymbol = std::function<FType( FInterpolator )>;
 inline FSymbol operator +(FSymbol sym, FTerm term){
     return [sym = std::move(sym),term=std::move(term)]( FInterpolator ip){
@@ -225,4 +258,5 @@ inline FFreq operator - (FFreq f){
 
 
 }
+
 #endif // FOURIER_H
