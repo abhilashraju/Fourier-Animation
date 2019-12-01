@@ -94,12 +94,13 @@ struct FInterpolator
 struct FTerm
 {
     FReal amp{1.};
-    FReal freq{1.};
+    FReal f{1.};
     FReal startangle{0};
-    FTerm(FReal a,FReal f=1,FReal p=0):amp(a),freq(f),startangle(p){}
+    FReal freq()const { return f;}
+    FTerm(FReal a,FReal f=1,FReal p=0):amp(a),f(f),startangle(p){}
     friend FType operator * (const FTerm& term,FReal t)
     {
-        return term.amp* FType{cos(term.startangle+Tou* term.freq* t),sin(term.startangle+Tou * term.freq* t)};
+        return term.amp* FType{cos(term.startangle+ term.freq()* t),sin(term.startangle+ term.freq()* t)};
     }
     friend auto operator + (const FType& pos,const FTerm& term)
     {
@@ -126,7 +127,7 @@ struct FTerm
     {
         FReal mag = std::abs<FReal>(com);
         FReal ang = std::arg<FReal>(com);
-        return FTerm{term.amp* mag,term.freq,ang};
+        return FTerm{term.amp* mag,term.f,ang};
 
     }
     friend auto operator * (const FTerm& term,const FComplex& com)
@@ -135,9 +136,15 @@ struct FTerm
         return com*term;
 
     }
+    template<typename STreamer>
+    friend STreamer& operator << (STreamer& os,const FTerm& pt)
+    {
+        os<<"FTerm{" << pt.amp<<" , " <<pt.freq()<<" , "<< pt.startangle <<"}";
+        return os;
+    }
 };
 template <typename Range,typename DrawFun>
-auto FT(const Range& r, const FType& start, FReal time,DrawFun fun ){
+auto F_S(const Range& r, const FType& start, FReal time,DrawFun fun ){
        return  std::accumulate(begin(r),end(r),start,[&](auto& pos, auto& term){
                  auto c = (pos+term)(time);
                  fun(pos,c,term.amp);
@@ -146,23 +153,27 @@ auto FT(const Range& r, const FType& start, FReal time,DrawFun fun ){
 }
 
 template <typename R>
-auto IFT(const R& data){
+auto D_F_T(const R& data,FReal initialphase=0.){
     using DF = typename R::difference_type;
-    DF t{std::distance(begin(data),end(data))};
+    FReal  N{(FReal)data.size()};
     std::vector<FTerm> terms;
     FReal f{0.0};
-    for(auto v:data)
+    FReal interval = 1.;
+    for(int i =0;i<N ;i++)
     {
 
         FType type{0.,0.};
-          for(auto j=0; j<t; j++){
-              auto phi = Tou * f * j/t;
-              type += FType(v * cos(phi),-v * sin(phi));
-          }
-          type = type * (1./1.);
+          for(FReal j=0; j<N; j++){
 
-          terms.emplace_back(FTerm{type.amplitude(),f/Tou,type.phase()});
-          f++;
+              auto phi = Tou * j *f /N;
+              type += FType(data[j] * cos(phi),-data[j] * sin(phi));
+          }
+//          cout<<type<<endl;
+          type = type * (1./N);
+//          cout<<type<<endl;
+          terms.emplace_back(FTerm{type.amplitude(),f,type.phase()+initialphase});
+//          cout<<*(terms.end()-1);
+          f+=interval;
 
     }
     return terms;

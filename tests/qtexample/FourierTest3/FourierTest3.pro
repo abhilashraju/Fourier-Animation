@@ -8,7 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = FourierTest2
+TARGET = FourierTest3
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -30,6 +30,8 @@ SOURCES += \
 
 INCLUDEPATH +=../../../src/
 
+INCLUDEPATH +=../../../../json/single_include/
+INCLUDEPATH +=../../../../json/include/
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

@@ -6,7 +6,7 @@ FourierWidget::FourierWidget(QWidget *parent) :
 
 {
     timer.connect(&timer,&QTimer::timeout,[=](){
-        time+=0.005;
+        time+=0.02;
         update();
     });
     timer.setSingleShot(false);
@@ -32,7 +32,7 @@ void FourierWidget::paintEvent(QPaintEvent *event)
     QPen pen(Qt::green);
     pen.setWidth(2);
     p.setPen(pen);
-    targetWave.emplace_front(FT(terms,{middle.x(),middle.y()},time,[&](auto start,auto r,auto amp)->void{
+    targetWave.emplace_front(F_S(terms,{middle.x(),middle.y()},time,[&](auto start,auto r,auto amp)->void{
             p.drawEllipse(QPointF{start.x(),start.y()},amp,amp);
             p.drawLine(QPointF{start.x(),start.y()},QPointF{r.x(),r.y()});
 
