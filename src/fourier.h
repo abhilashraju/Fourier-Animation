@@ -152,31 +152,44 @@ auto F_S(const Range& r, const FType& start, FReal time,DrawFun fun ){
              });
 }
 
+//template <typename R>
+//auto D_F_T(const R& data,FReal initialphase=0.){
+//    using DF = typename R::difference_type;
+//    FReal  N{(FReal)data.size()};
+//    std::vector<FTerm> terms;
+//    FReal f{0.0};
+//    FReal interval = 1.;
+//    for(int i =0;i<N ;i++)
+//    {
+
+//        FType type{0.,0.};
+//          for(FReal j=0; j<N; j++){
+
+//              auto phi = Tou * j *f /N;
+//              type += FType(data[j] * cos(phi),-data[j] * sin(phi));
+//          }
+//          type = type * (1./N);
+//          terms.emplace_back(FTerm{type.amplitude(),f,type.phase()+initialphase});
+//          f+=interval;
+
+//    }
+//    return terms;
+//}
 template <typename R>
 auto D_F_T(const R& data,FReal initialphase=0.){
-    using DF = typename R::difference_type;
-    FReal  N{(FReal)data.size()};
     std::vector<FTerm> terms;
-    FReal f{0.0};
-    FReal interval = 1.;
-    for(int i =0;i<N ;i++)
-    {
-
-        FType type{0.,0.};
-          for(FReal j=0; j<N; j++){
-
-              auto phi = Tou * j *f /N;
-              type += FType(data[j] * cos(phi),-data[j] * sin(phi));
-          }
-//          cout<<type<<endl;
-          type = type * (1./N);
-//          cout<<type<<endl;
-          terms.emplace_back(FTerm{type.amplitude(),f,type.phase()+initialphase});
-//          cout<<*(terms.end()-1);
-          f+=interval;
-
-    }
+    auto N = std::distance(begin(data),end(data));
+     std::transform(begin(data),end(data),std::back_inserter(terms),[&,f=0.0](auto )mutable{
+       auto type = std::accumulate(begin(data),end(data),FType{0.,0.},[&,innerfreq=0.](auto sofar,auto current)mutable{
+            auto phi = Tou * innerfreq++ * f /N;
+            sofar += FType(current * cos(phi),-current * sin(phi));
+            return sofar;
+        });
+        type=type * (1./N);
+        return FTerm{type.amplitude(),f++,type.phase()+initialphase};
+    });
     return terms;
+
 }
 using FSymbol = std::function<FType( FInterpolator )>;
 inline FSymbol operator +(FSymbol sym, FTerm term){
