@@ -7,6 +7,7 @@
 #include <QPainter>
 #include <QDebug>
 #include <numeric>
+#include "fourierdraw.h"
 using namespace FourierLiterals;
 
 #include <nlohmann/json.hpp>
@@ -260,13 +261,7 @@ auto j2 = R"(
 
          ]
 )"_json;
-template<typename R1,typename R2,typename R3,typename CombFunc >
-void combine (R1 r1,R2 r2, R3 dest, CombFunc func){
-         std::inner_product(begin(r1),end(r1),begin(r2),dest,[](auto dest,auto val){
-           dest=val;return dest;
-         },func);
 
-}
 struct Widget:public QWidget{
 
     QTimer timer;
@@ -313,60 +308,17 @@ struct Widget:public QWidget{
         pen.setWidth(3);
         p.setPen(pen);
         QPointF middle(width()/2,height()/2);
-        auto epiCircleDraw = [&](auto c,auto per,auto amp)->void{
-            p.drawEllipse(QPointF{c.x(),c.y()},amp,amp);
-            p.drawLine(QPointF{c.x(),c.y()},QPointF{per.x(),per.y()});
-        };
-        auto handleDraw = [&](auto c,auto per,auto amp)->void{
-            p.drawLine(QPointF{c.x(),c.y()},QPointF{per.x(),per.y()});
-        };
-        auto makeValues =[](FReal t, auto offset ,auto& terms, auto draw){
-            return [=](auto& wave)->const decltype(wave)& {
-                wave.emplace_front(F_S(terms,{offset.x(),offset.y()},t,draw));
-                if(wave.size()>500){
-                    wave.erase(wave.end()-1);
 
-                }
-                return wave;
-            };
-
-        };
-        auto drawWave = [&p](const auto& wave,auto offset){
-            if(wave.size()){
-                QPainterPath path;
-                path.moveTo(wave.front().x(),wave.front().y());
-                auto start=QPointF{offset.x()+150,wave.front().y()};
-                path.lineTo(start);
-                for(auto& pos:wave){
-                    path.addEllipse(QPointF{start.x(),pos.y()},2,2);
-                    start = QPointF{start.x()+2,pos.y()};
-                }
-                p.drawPath(path);
-            }
-
-        };
-        auto drawTrace = [&p](const auto& wave){
-            if(wave.size()){
-                QPainterPath path;
-                auto start= wave.front();
-                path.moveTo(QPointF{start.x(),start.y()});
-                for(auto& pos:wave){
-                    path.quadTo({start.x(),start.y()},QPointF{pos.x(),pos.y()});
-                    start =pos;
-                }
-                p.drawPath(path);
-            }
-
-        };
-
+        auto epiCircleDraw =make_epiCircleDraw<QPainter,QPointF>(p);
+        auto handleDraw=make_handleDraw<QPainter,QPointF>(p);
+        auto drawWave=make_drawWave<QPainter,QPointF,QPainterPath>(p);
+        auto drawTrace=make_drawTrace<QPainter,QPointF,QPainterPath>(p);
         pen.setWidth(5);
         pen.setColor(Qt::green);
         p.setPen(pen);
-//        drawWave(makeValues(time,middle,ftofx,handleDraw)(targetWavex),middle);
-//        drawTrace(makeValues(time,middle ,ftofy,handleDraw)(targetWavey));
 
-        auto values1 = makeValues(time,middle+QPointF(200,-200),ftofx,epiCircleDraw)(targetWavex);
-        auto values2 = makeValues(time,middle+QPointF(-300,100) ,ftofy,epiCircleDraw)(targetWavey);
+        auto values1 = make_Values(time,middle+QPointF(200,-200),ftofx,epiCircleDraw)(targetWavex);
+        auto values2 = make_Values(time,middle+QPointF(-300,100) ,ftofy,epiCircleDraw)(targetWavey);
         std::vector<QPointF> dest;
         combine(values1,values2,std::back_inserter(dest),[](auto val1, auto val2){
             return QPointF{val1.x(), val2.y()};

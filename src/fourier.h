@@ -152,29 +152,7 @@ auto F_S(const Range& r, const FType& start, FReal time,DrawFun fun ){
              });
 }
 
-//template <typename R>
-//auto D_F_T(const R& data,FReal initialphase=0.){
-//    using DF = typename R::difference_type;
-//    FReal  N{(FReal)data.size()};
-//    std::vector<FTerm> terms;
-//    FReal f{0.0};
-//    FReal interval = 1.;
-//    for(int i =0;i<N ;i++)
-//    {
 
-//        FType type{0.,0.};
-//          for(FReal j=0; j<N; j++){
-
-//              auto phi = Tou * j *f /N;
-//              type += FType(data[j] * cos(phi),-data[j] * sin(phi));
-//          }
-//          type = type * (1./N);
-//          terms.emplace_back(FTerm{type.amplitude(),f,type.phase()+initialphase});
-//          f+=interval;
-
-//    }
-//    return terms;
-//}
 template <typename R>
 auto D_F_T(const R& data,FReal initialphase=0.){
     std::vector<FTerm> terms;
@@ -200,7 +178,13 @@ inline FSymbol operator +(FSymbol sym, FTerm term){
         return per;
     };
 }
+template<typename R1,typename R2,typename R3,typename CombFunc >
+void combine (R1 r1,R2 r2, R3 dest, CombFunc func){
+         std::inner_product(begin(r1),end(r1),begin(r2),dest,[](auto dest,auto val){
+           dest=val;return dest;
+         },func);
 
+}
 namespace  FourierLiterals{
 struct FFreq
 {
