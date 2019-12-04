@@ -12,7 +12,7 @@ using namespace FourierLiterals;
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
-auto j2 = R"(
+auto js = R"(
           [
           {"x": -1.8286974392723174, "y": 59.814181827227635},
           {"x": -4.976831584697713, "y": 65.82425182918777},
@@ -259,40 +259,29 @@ auto j2 = R"(
           {"x": -150.64887170707317, "y": 149.39266939307632}
 
 
-
          ]
 )"_json;
 
 struct Widget:public QWidget{
 
     QTimer timer;
-    std::deque<FType> targetWavex;
-    std::deque<FType> targetWavey;
+    std::deque<FType> targetWave;
     FReal time{0.};
-    std::vector<FTerm> ftofx;
-    std::vector<FTerm> ftofy;
+    std::vector<FTerm> terms;
     Widget(){
-      std::vector<FReal> xvals;
-        std::vector<FReal> yvals;
-         for(auto& v: j2){
-             xvals.emplace_back(v["x"]);
-             yvals.emplace_back(v["y"]);
-         }
-         ftofx= D_F_T(xvals);
-         std::sort(begin(ftofx),end(ftofx),[](auto v1, auto v2){
-             return v1.amp > v2.amp;
-         });
+      std::vector<FType> vals;
+      std::transform(begin(js),end(js),std::back_inserter(vals),[](auto v){
+             return FType{v["x"],v["y"]};
 
-         ftofy= D_F_T(yvals,PI/2.);
-         std::sort(begin(ftofy),end(ftofy),[](auto v1, auto v2){
-             return v1.amp > v2.amp;
-         });
-
-
+      });
+     terms= D_F_T(vals);
+     std::sort(begin(terms),end(terms),[](auto v1, auto v2){
+         return v1.amp > v2.amp;
+     });
          timer.connect(&timer,&QTimer::timeout,[=](){
-            time+=  Tou/ftofy.size();
+            time+=  Tou/terms.size();
             time = (time >Tou)?0.:time;
-            if(!time){targetWavex.clear(),targetWavey.clear();}
+            if(!time){targetWave.clear();}
             update();
 
         });
@@ -318,17 +307,10 @@ struct Widget:public QWidget{
         pen.setColor(Qt::green);
         p.setPen(pen);
 
-        auto values1 = make_Values(time,middle+QPointF(200,-200),ftofx,epiCircleDraw)(targetWavex);
-        auto values2 = make_Values(time,middle+QPointF(-300,100) ,ftofy,epiCircleDraw)(targetWavey);
-        std::vector<QPointF> dest;
-        combine(values1,values2,std::back_inserter(dest),[](auto val1, auto val2){
-            return QPointF{val1.x(), val2.y()};
-         });
-        p.drawLine(QPointF(values1.front().x(),values1.front().y()),QPointF(dest.front().x(),dest.front().y()));
-        p.drawLine(QPointF(values2.front().x(),values2.front().y()),QPointF(dest.front().x(),dest.front().y()));
+        auto values1 = make_Values(time,middle+QPointF(200,-200),terms,epiCircleDraw)(targetWave);
         pen.setColor(Qt::red);
         p.setPen(pen);
-        drawTrace(dest);
+        drawTrace(values1);
     }
 
 };

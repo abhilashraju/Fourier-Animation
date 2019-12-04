@@ -51,6 +51,10 @@ struct PointF
    friend PointF operator + (const PointF& pt1, const PointF& pt2){
        return PointF{pt1.mx+pt2.mx,pt1.my+pt2.my};
    }
+   friend PointF operator * (const PointF& pt1, const PointF& pt2){
+       return PointF{pt1.mx*pt2.mx - pt1.my*pt2.my,pt1.mx*pt2.my + pt1.my * pt2.mx};
+   }
+
    template<typename STreamer>
    friend STreamer& operator << (STreamer& os,const PointF& pt)
    {
@@ -160,10 +164,12 @@ auto D_F_T(const R& data,FReal initialphase=0.){
      std::transform(begin(data),end(data),std::back_inserter(terms),[&,f=0.0](auto )mutable{
        auto type = std::accumulate(begin(data),end(data),FType{0.,0.},[&,innerfreq=0.](auto sofar,auto current)mutable{
             auto phi = Tou * innerfreq++ * f /N;
-            sofar += FType(current * cos(phi),-current * sin(phi));
+            sofar += current * FType{cos(phi),-sin(phi)};
             return sofar;
         });
+        cout<<type<<endl;
         type=type * (1./N);
+        cout<<type<<endl;
         return FTerm{type.amplitude(),f++,type.phase()+initialphase};
     });
     return terms;
