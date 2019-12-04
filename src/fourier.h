@@ -32,49 +32,10 @@ using namespace std::complex_literals;
 const auto PI = acos(-1);
 const auto Tou= 2.*PI;
 
-
-template<typename T>
-struct PointF
-{
-   T mx;
-   T my;
-
-   PointF(double x,double y):mx(x),my(y){}
-   T x()const {return mx;}
-   T y()const {return my;}
-   friend PointF operator * (T v, const PointF& pt){
-       return PointF{pt.mx * v,pt.my *v};
-   }
-   friend PointF operator * (const PointF& pt ,T v ){
-       return PointF{pt.mx * v,pt.my *v};
-   }
-   friend PointF operator + (const PointF& pt1, const PointF& pt2){
-       return PointF{pt1.mx+pt2.mx,pt1.my+pt2.my};
-   }
-   friend PointF operator * (const PointF& pt1, const PointF& pt2){
-       return PointF{pt1.mx*pt2.mx - pt1.my*pt2.my,pt1.mx*pt2.my + pt1.my * pt2.mx};
-   }
-
-   template<typename STreamer>
-   friend STreamer& operator << (STreamer& os,const PointF& pt)
-   {
-       os<<"PointF{" << pt.mx<<"," <<pt.my<<"}";
-       return os;
-   }
-   void operator +=(const PointF& o){
-       *this = *this + o;
-   }
-   T amplitude()const {
-       return sqrt(mx*mx + my*my);
-   }
-   T phase()const {
-       return atan2(my,mx);
-   }
-};
-
 using FReal = double;
+using FType = complex<FReal>;
 using FComplex = complex<FReal>;
-using FType = PointF<FReal>;
+
 
 struct FInterpolator
 {
@@ -170,7 +131,7 @@ auto D_F_T(const R& data,FReal initialphase=0.){
         cout<<type<<endl;
         type=type * (1./N);
         cout<<type<<endl;
-        return FTerm{type.amplitude(),f++,type.phase()+initialphase};
+        return FTerm{std::abs(type),f++,std::arg(type)+initialphase};
     });
     return terms;
 

@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <QPainter>
 #include <QDebug>
+#include "fourierdraw.h"
 using namespace FourierLiterals;
 
 struct Widget:public QWidget{
@@ -51,10 +52,12 @@ struct Widget:public QWidget{
         pen.setWidth(3);
         p.setPen(pen);
         QPointF offset(400,400);
-        targetWave.emplace_front(FType{offset.x(),offset.y()}+ (*iter)(FInterpolator(time,[&](auto c,auto per,auto amp){
-            p.drawEllipse(offset+QPointF{c.x(),c.y()},amp,amp);
-            p.drawLine(offset+QPointF{c.x(),c.y()},offset+QPointF{per.x(),per.y()});
-        })));
+        auto epiCircleDraw =make_epiCircleDraw<QPainter,QPointF>(p,offset);
+        auto handleDraw=make_handleDraw<QPainter,QPointF>(p,offset);
+        auto drawWave=make_drawWave<QPainter,QPointF,QPainterPath>(p);
+        auto drawTrace=make_drawTrace<QPainter,QPointF,QPainterPath>(p);
+
+        targetWave.emplace_front(FType{offset.x(),offset.y()}+ (*iter)(FInterpolator(time,handleDraw)));
 
 
         if(targetWave.size()>1000){
@@ -62,19 +65,8 @@ struct Widget:public QWidget{
 
         }
         pen.setWidth(5);
-        QPainterPath path;
-        if(targetWave.size()){
-           pen.setColor(Qt::green);
 
-            p.setPen(pen);
-            auto start= targetWave.front();
-            path.moveTo(QPointF{start.x(),start.y()});
-            for(auto& pos:targetWave){
-                path.quadTo({start.x(),start.y()},QPointF{pos.x(),pos.y()});
-                start =pos;
-            }
-            p.drawPath(path);
-        }
+        drawTrace(targetWave);
 
     }
 

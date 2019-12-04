@@ -320,12 +320,12 @@ struct Widget:public QWidget{
 
         auto values1 = make_Values(time,middle+QPointF(200,-200),ftofx,epiCircleDraw)(targetWavex);
         auto values2 = make_Values(time,middle+QPointF(-300,100) ,ftofy,epiCircleDraw)(targetWavey);
-        std::vector<QPointF> dest;
+        std::vector<FType> dest;
         combine(values1,values2,std::back_inserter(dest),[](auto val1, auto val2){
-            return QPointF{val1.x(), val2.y()};
+            return FType{val1.real(), val2.imag()};
          });
-        p.drawLine(QPointF(values1.front().x(),values1.front().y()),QPointF(dest.front().x(),dest.front().y()));
-        p.drawLine(QPointF(values2.front().x(),values2.front().y()),QPointF(dest.front().x(),dest.front().y()));
+        p.drawLine(QPointF(values1.front().real(),values1.front().imag()),QPointF(dest.front().real(),dest.front().imag()));
+        p.drawLine(QPointF(values2.front().real(),values2.front().imag()),QPointF(dest.front().real(),dest.front().imag()));
         pen.setColor(Qt::red);
         p.setPen(pen);
         drawTrace(dest);

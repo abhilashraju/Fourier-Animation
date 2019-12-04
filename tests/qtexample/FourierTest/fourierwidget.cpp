@@ -1,6 +1,6 @@
 #include "fourierwidget.h"
 #include <QPainter>
-
+#include "fourierdraw.h"
 FourierWidget::FourierWidget(QWidget *parent) :
     QWidget(parent)
 
@@ -32,54 +32,29 @@ void FourierWidget::paintEvent(QPaintEvent *event)
     QPen pen(Qt::green);
     pen.setWidth(2);
     p.setPen(pen);
-    targetWave.emplace_front(F_S(terms,{middle.x(),middle.y()},time,[&](auto start,auto r,auto amp)->void{
-            p.drawEllipse(QPointF{start.x(),start.y()},amp,amp);
-            p.drawLine(QPointF{start.x(),start.y()},QPointF{r.x(),r.y()});
+    auto epiCircleDraw =make_epiCircleDraw<QPainter,QPointF>(p);
+    auto handleDraw=make_handleDraw<QPainter,QPointF>(p);
 
-    }));
-    if(targetWave.size()>500){
-        targetWave.erase(targetWave.end()-1);
+    auto values1 = make_Values(time,middle+QPointF(200,-200),terms,epiCircleDraw)(targetWave);
 
-    }
+
     pen.setColor(Qt::red);
 
     p.setPen(pen);
-    QPainterPath path;
-    switch (dmode) {
-    case DrawXY:{
-            auto start= targetWave.front();
-            path.moveTo(QPointF{start.x(),start.y()});
-            for(auto& pos:targetWave){
-                path.quadTo({start.x(),start.y()},QPointF{pos.x(),pos.y()});
-                start =pos;
-            }
-        }
-        break;
-    case DrawY:{
+    switch( dmode){
+    case DrawX:
+         make_drawWave<QPainter,QPointF,QPainterPath>(p,0)(values1,middle);
 
-            path.moveTo(targetWave.front().x(),targetWave.front().y());
-            auto start=QPointF{middle.x()+150,targetWave.front().y()};
-            path.lineTo(start);
-            for(auto& pos:targetWave){
-                path.addEllipse(QPointF{start.x(),pos.y()},2,2);
-                start = QPointF{start.x()+2,pos.y()};
-            }
-         }
         break;
-    case DrawX:{
-
-            path.moveTo(targetWave.front().x(),targetWave.front().y());
-            auto start=QPointF{targetWave.front().x(),middle.y()+150};
-            path.lineTo(start);
-            for(auto& pos:targetWave){
-                path.addEllipse(QPointF{pos.x(),start.y()},2,2);
-                start = QPointF{pos.x(),start.y()+2};
-            }
-         }
+        case DrawY:
+        make_drawWave<QPainter,QPointF,QPainterPath>(p,1)(values1,middle+QPointF{300,0});
+        break;
+        case DrawXY:
+        make_drawTrace<QPainter,QPointF,QPainterPath>(p)(values1);
         break;
     }
 
-    p.drawPath(path);
+
 
 }
 void FourierWidget::addFourierTerm(const std::vector<FTerm>& t)

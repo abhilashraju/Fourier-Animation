@@ -2,19 +2,19 @@
 #define FOURIERDRAW_H
 #include "fourier.h"
 template<typename Painter,typename Point>
-auto make_epiCircleDraw (Painter& p)
+auto make_epiCircleDraw (Painter& p,const Point& offset =Point())
 {
     return [&](const FType& c,const FType& per,FReal amp){
-        p.drawEllipse(Point{c.x(),c.y()},amp,amp);
-        p.drawLine(Point{c.x(),c.y()},Point{per.x(),per.y()});
+        p.drawEllipse(offset +Point{c.real(),c.imag()},amp,amp);
+        p.drawLine(offset+Point{c.real(),c.imag()},offset+Point{per.real(),per.imag()});
     };
     
 }
 template<typename Painter,typename Point>
- auto make_handleDraw(Painter& p)
+ auto make_handleDraw(Painter& p,const Point& offset =Point())
  {
       return [&](const FType& c,const FType& per,FReal amp){
-          p.drawLine(Point{c.x(),c.y()},Point{per.x(),per.y()});
+          p.drawLine(offset+Point{c.real(),c.imag()},offset+Point{per.real(),per.imag()});
         
       };
  }
@@ -31,17 +31,28 @@ auto make_Values(FReal t, const Point& offset ,const Source& terms, DrawFun draw
 
 };
 template<typename Painter,typename Point,typename Path>
-auto make_drawWave(Painter& p){
-   return  [&p](const auto& wave,auto offset){
+auto make_drawWave(Painter& p,int axis=1){
+    return  [&p,&axis](const auto& wave,auto offset){
         if(wave.size()){
             Path path;
-            path.moveTo(wave.front().x(),wave.front().y());
-            auto start=Point{offset.x()+150,wave.front().y()};
-            path.lineTo(start);
-            for(auto& pos:wave){
-                path.addEllipse(Point{start.x(),pos.y()},2,2);
-                start = Point{start.x()+2,pos.y()};
+            path.moveTo(wave.front().real(),wave.front().imag());
+
+            if(axis){
+                auto start=Point{offset.x(),wave.front().imag()};
+                path.lineTo(start);
+                for(auto& pos:wave){
+                    path.addEllipse(Point{start.x(),pos.imag()},2,2);
+                    start = Point{start.x()+2,pos.imag()};
+                }
+            }else{
+                auto start=Point{wave.front().real(),offset.y()};
+                path.lineTo(start);
+                for(auto& pos:wave){
+                    path.addEllipse(Point{pos.real(),start.y()},2,2);
+                    start = Point{pos.real()+2,start.y()};
+                }
             }
+
             p.drawPath(path);
         }
     };
@@ -52,9 +63,9 @@ auto make_drawTrace(Painter& p){
             if(wave.size()){
                 Path path;
                 auto start= wave.front();
-                path.moveTo(Point{start.x(),start.y()});
+                path.moveTo(Point{start.real(),start.imag()});
                 for(auto& pos:wave){
-                    path.quadTo({start.x(),start.y()},Point{pos.x(),pos.y()});
+                    path.quadTo({start.real(),start.imag()},Point{pos.real(),pos.imag()});
                     start =pos;
                 }
                 p.drawPath(path);
