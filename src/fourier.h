@@ -128,9 +128,9 @@ auto D_F_T(const R& data,FReal initialphase=0.){
             sofar += current * FType{cos(phi),-sin(phi)};
             return sofar;
         });
-        cout<<type<<endl;
+
         type=type * (1./N);
-        cout<<type<<endl;
+
         return FTerm{std::abs(type),f++,std::arg(type)+initialphase};
     });
     return terms;
