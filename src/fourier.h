@@ -34,8 +34,6 @@ const auto Tou= 2.*PI;
 
 using FReal = double;
 using FType = complex<FReal>;
-using FComplex = complex<FReal>;
-
 
 struct FInterpolator
 {
@@ -88,14 +86,14 @@ struct FTerm
     {
         return pos + term;
     }
-    friend auto operator * (const FComplex& com,const FTerm& term)
+    friend auto operator * (const FType& com,const FTerm& term)
     {
         FReal mag = std::abs<FReal>(com);
         FReal ang = std::arg<FReal>(com);
         return FTerm{term.amp* mag,term.f,ang};
 
     }
-    friend auto operator * (const FTerm& term,const FComplex& com)
+    friend auto operator * (const FTerm& term,const FType& com)
     {
 
         return com*term;

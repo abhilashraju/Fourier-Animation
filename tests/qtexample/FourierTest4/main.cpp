@@ -307,7 +307,7 @@ struct Widget:public QWidget{
         pen.setColor(Qt::green);
         p.setPen(pen);
 
-        auto values1 = make_Values(time,middle+QPointF(200,-200),terms,epiCircleDraw)(targetWave);
+        auto values1 = make_Values(time,middle,terms,epiCircleDraw)(targetWave);
         pen.setColor(Qt::red);
         p.setPen(pen);
         drawTrace(values1);

@@ -45,6 +45,10 @@ struct Widget:public QWidget{
         pen.setWidth(5);
         pen.setColor(Qt::red);
         p.setPen(pen);
+        if(!inputvectors.size() && !terms.size()){
+            p.setFont(QFont("Times New Roman",10,2,true));
+             p.drawText(QPointF(width()/2,height()/2),"Draw figure by not lifting your hand");
+        }
         if(inputvectors.size()){
             QPainterPath path;
             auto start= inputvectors.front()+QPoint(width()/2,height()/2);
