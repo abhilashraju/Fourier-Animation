@@ -53,39 +53,51 @@ struct FInterpolator
     }
 };
 
-
+//A fourier series can be expressed as FS = A0 * e^(2*PI*0) + A1 * e^(2*PI*1) + A2 * e^(2*PI*2) + ....
+//where Fn = e^(2*PI*n) is represented with FTerm
+//An = Fourient co-efficient of nth term represented with FType
+//FS is a function of time and cabe be evaluated for a time t as FT(t)
 struct FTerm
 {
-    FReal amp{1.};
-    FReal f{1.};
-    FReal startangle{0};
+    FReal amp{1.}; //amplitude
+    FReal f{1.};   //frequency
+    FReal startangle{0}; //phase angle
     FReal freq()const { return f;}
     FTerm(FReal a,FReal f=1,FReal p=0):amp(a),f(f),startangle(p){}
-    friend FType operator * (const FTerm& term,FReal t)
+    //function that evaluate the FTerm at time t and returns resulting vector in complex plane : Fn(t)
+    FType operator ()(FReal t)const
     {
-        return term.amp* FType{cos(term.startangle+ term.freq()* t),sin(term.startangle+ term.freq()* t)};
+        return amp* FType{cos(startangle+ freq()* t),sin(startangle+ freq()* t)};
     }
+    //connector that composes vector in complex plain and a Fourier terms: Vn= Vi + Fn(t)
+    // return an evaluator  that can converts time in to vector in complex plane
     friend auto operator + (const FType& pos,const FTerm& term)
     {
         return [=](FReal t){
-            return pos + term * t;
+            return pos + term(t);
         };
     }
+    //symmetric function for + operator: Vn =Fn(t) + Vi
+    friend auto operator + (const FTerm& term,const FType& pos)
+    {
+        return pos + term;
+    }
+    //connector that composes two fourier terms: F_S= ( Fn + Fn+1)(t)
+    // return an evaluator that can convert time in to a vector in complex plain
+    // the time function is an interpolator ,which can be implemented by the client to return time
+    //and a callable ,which can be use to draw the intermediate frequencies (epi circles)
     friend auto operator + (const FTerm& term1,const FTerm& term2)
     {
         return [=](FInterpolator ip){
-            auto center = term1*ip.time();
-            auto per=  center + term2 * ip.time();
+            auto center = term1(ip.time());
+            auto per=  center + term2(ip.time());
             ip(FType{0.0,0.0},center,term1.amp);
             ip(center,per,term2.amp);
             return per;
 
         };
     }
-    friend auto operator + (const FTerm& term,const FType& pos)
-    {
-        return pos + term;
-    }
+    //mltiplier that connect complex co-coefficient and and frequency component in a fourier term: Fn = An * e^(2*PI*n)
     friend auto operator * (const FType& com,const FTerm& term)
     {
         FReal mag = std::abs<FReal>(com);
@@ -93,12 +105,14 @@ struct FTerm
         return FTerm{term.amp* mag,term.f,ang};
 
     }
+    //symmetric function for * Fn = e^(2*PI*n) *An
     friend auto operator * (const FTerm& term,const FType& com)
     {
 
         return com*term;
 
     }
+    //steaming operator for debug logs
     template<typename STreamer>
     friend STreamer& operator << (STreamer& os,const FTerm& pt)
     {
@@ -106,6 +120,13 @@ struct FTerm
         return os;
     }
 };
+//Input
+// r: the range of FTerms that repersents the terms in fourier series
+// start: starting vector to appropriately position the resulting signal in the plane.
+// time: the time for which the fourier series should be evaluated
+// fun : the drawing call back which user can implement to draw the epic-circles and arrows
+// representing frequency component.
+// Output : is the final vector computed after adding up all the terms in the series.
 template <typename Range,typename DrawFun>
 auto F_S(const Range& r, const FType& start, FReal time,DrawFun fun ){
        return  std::accumulate(begin(r),end(r),start,[&](auto& pos, auto& term){
@@ -138,7 +159,7 @@ using FSymbol = std::function<FType( FInterpolator )>;
 inline FSymbol operator +(FSymbol sym, FTerm term){
     return [sym = std::move(sym),term=std::move(term)]( FInterpolator ip){
         auto center = sym(ip);
-        auto per=  center + term * ip.time();
+        auto per=  center + term (ip.time());
         ip(center,per,term.amp);
         return per;
     };

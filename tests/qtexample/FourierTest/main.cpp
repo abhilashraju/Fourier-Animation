@@ -20,7 +20,6 @@ int main(int argc, char *argv[])
     FReal radius=100.;
     for(int i =0;i<10;i++){
         FReal n=2.*i+1.;
-
         terms.emplace_back(FTerm{radius*4/(n*PI),  n});
     }
     //uncomment below line and try different sorting parameters to prove that the order of term does not matter.

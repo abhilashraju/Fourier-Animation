@@ -14,8 +14,7 @@ template<typename Painter,typename Point>
  auto make_handleDraw(Painter& p,const Point& offset =Point())
  {
       return [&](const FType& c,const FType& per,FReal amp){
-          p.drawLine(offset+Point{c.real(),c.imag()},offset+Point{per.real(),per.imag()});
-        
+          p.drawLine(offset+Point{c.real(),c.imag()},offset+Point{per.real(),per.imag()});      
       };
  }
 template<typename Point,typename Source,typename DrawFun>         
@@ -24,7 +23,6 @@ auto make_Values(FReal t, const Point& offset ,const Source& terms, DrawFun draw
         wave.emplace_front(F_S(terms,{offset.x(),offset.y()},t,draw));
         if(wave.size()>500){
             wave.erase(wave.end()-1);
-
         }
         return wave;
     };

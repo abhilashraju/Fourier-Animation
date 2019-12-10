@@ -19,7 +19,7 @@ struct Widget:public QWidget{
    Widget(){
        FTerm t1{50,1.};
        syms.emplace_back(t1 + std::polar(2.,PI/2.) * t1 + (1.+2.i)*t1 + FTerm{50,3});
-       syms.emplace_back( 150._A*4/PI * 1._F + 150._a*4/(3*PI) * 3._F + 150._A*4/(5*PI) * 5._F);
+       syms.emplace_back( 150._A*4/PI * 1._F + 150._a*4/(3*PI) * 3._F + 150._A*4/(5*PI) * 5._F + 150._A*4/(7*PI) * 7._F + 150._A*4/(9*PI) * 9._F + 150._A*4/(11*PI) * 11._F);
        syms.emplace_back(200._A * 1._F + 50._A * 2._F + 75._A * 3._F + 25._A * -4._F + 50._A * -2._F);
        syms.emplace_back(200._A * -1._F + 50._A * -2._F + 75._A * 3._F + 25._A * -4._F + 50._A * 7._F);
        syms.emplace_back(200._A * 1._F + 50._A * -2._F + 75._A * 3._F + 25._A * -3._F + 50._A * -3._F);
