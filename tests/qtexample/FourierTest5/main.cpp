@@ -27,7 +27,7 @@ struct Widget:public QWidget{
 
         });
         timer.setSingleShot(false);
-        timer.setInterval(30ms);
+        timer.setInterval(10ms);
         timer.start();
 
     }
@@ -65,7 +65,9 @@ struct Widget:public QWidget{
             auto epiCircleDraw =make_epiCircleDraw<QPainter,QPointF>(p);
             auto handleDraw=make_handleDraw<QPainter,QPointF>(p);
             auto drawTrace=make_drawTrace<QPainter,QPointF,QPainterPath>(p);
-            auto values1 = make_Values(time,QPointF(width()/2,height()/2),terms,handleDraw)(targetWave);
+            auto values1 = make_Values(time,QPointF(width()/2,height()/2),terms,epiCircleDraw,2000)(targetWave);
+            pen.setColor(Qt::red);
+            p.setPen(pen);
             drawTrace(values1);
         }
 

@@ -17,11 +17,11 @@ template<typename Painter,typename Point>
           p.drawLine(offset+Point{c.real(),c.imag()},offset+Point{per.real(),per.imag()});      
       };
  }
-template<typename Point,typename Source,typename DrawFun>         
-auto make_Values(FReal t, const Point& offset ,const Source& terms, DrawFun draw){
+template<typename Point,typename Source,typename DrawFun>
+auto make_Values(FReal t, const Point& offset ,const Source& terms, DrawFun draw,int max=500){
     return [=](auto& wave)->const decltype(wave)& {
         wave.emplace_front(F_S(terms,{offset.x(),offset.y()},t,draw));
-        if(wave.size()>500){
+        if(wave.size()>max){
             wave.erase(wave.end()-1);
         }
         return wave;
@@ -64,6 +64,7 @@ auto make_drawTrace(Painter& p){
                 path.moveTo(Point{start.real(),start.imag()});
                 for(auto& pos:wave){
                     path.quadTo({start.real(),start.imag()},Point{pos.real(),pos.imag()});
+//                     path.lineTo(Point{pos.real(),pos.imag()});
                     start =pos;
                 }
                 p.drawPath(path);

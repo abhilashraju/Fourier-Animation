@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <numeric>
 #include "fourierdraw.h"
+#include "fstream"
 using namespace FourierLiterals;
 
 #include <nlohmann/json.hpp>
@@ -261,39 +262,130 @@ auto js = R"(
 
          ]
 )"_json;
-
+namespace FView{
+template <int v>
+class FTypeView {
+public:
+    // member typedefs provided through inheriting from std::iterator
+    class iterator: public std::iterator<
+                        std::input_iterator_tag,   // iterator_category
+                        FReal,                      // value_type
+                        long,                      // difference_type
+                        const FReal*,               // pointer
+                        FReal                       // reference
+                                      >{
+       std::vector<FType>::iterator iter;
+    public:
+        explicit iterator(std::vector<FType>::iterator i) : iter(i) {}
+        iterator& operator++() {iter++; return *this;}
+        iterator operator++(int) {iterator retval = *this; ++(*this); return retval;}
+        bool operator==(iterator other) const {return iter == other.iter;}
+        bool operator!=(iterator other) const {return !(*this == other);}
+        reference operator*() const {return (v==1)?iter->real():iter->imag();}
+    };
+    iterator begin()const {return iterator(source.begin());}
+    iterator end()const {return iterator(source.end());}
+    FTypeView(std::vector<FType>& src):source(src){};
+    std::vector<FType>& source;
+};
+using XView=FTypeView<1>;
+using YView=FTypeView<2>;
+template <int I>
+typename FTypeView<I>::iterator begin( const FTypeView<I>& r)
+{
+    return  r.begin();
+}
+template <int I>
+typename FTypeView<I>::iterator end( const FTypeView<I>& r)
+{
+    return  r.end();
+}
+}
+using namespace FView;
 struct Widget:public QWidget{
 
     QTimer timer;
     std::deque<FType> targetWave;
+    std::deque<FType> targetWaveX;
+    std::deque<FType> targetWaveY;
     FReal time{0.};
     std::vector<FTerm> terms;
-    Widget(){
-      std::vector<FType> vals;
-      std::transform(begin(js),end(js),std::back_inserter(vals),[](auto v){
-             return FType{v["x"],v["y"]};
+    std::vector<FTerm> xterms;
+    std::vector<FTerm> yterms;
+    int currentImage{0};
+    bool comDraw{true};
+    std::vector<std::string> files{"bat.json",
+                                  "dude.json","hand.json",
+                                  "horse.json","treble.json"};
+    QPoint center{width()/2,height()/2};
+    void processNextImage(){
+        targetWave.clear();
+        terms.clear();
+        targetWaveX.clear();
+        xterms.clear();
+        targetWaveY.clear();
+        yterms.clear();
+        currentImage++;
+        currentImage = currentImage %5;
+        std::vector<FType> vals;
+        std::ifstream i(files[currentImage]);
+        json treble;
+        i >> treble;
+        std::transform(begin(treble),end(treble),std::back_inserter(vals),[=](auto v){
+               FReal x = v["x"];
+               FReal y = v["y"];
+               return FType{x-center.x(),y-center.y()};
 
-      });
-     terms= D_F_T(vals);
-     std::sort(begin(terms),end(terms),[](auto v1, auto v2){
-         return v1.amp > v2.amp;
-     });
+        });
+        std::vector<FType> newvals;
+        std::copy_if(begin(vals),end(vals),std::back_inserter(newvals),[j=0](auto v)mutable{
+            return (j++ % 5)==0;
+        });
+
+       if(comDraw){
+           terms= D_F_T(newvals);
+           std::sort(begin(terms),end(terms),[](auto v1, auto v2){
+               return v1.amp > v2.amp;
+           });
+       }
+       else{
+           xterms= D_F_T(XView(newvals));
+           yterms = D_F_T(YView(newvals),PI/2.);
+
+           std::sort(begin(xterms),end(xterms),[](auto v1, auto v2){
+               return v1.amp > v2.amp;
+           });
+           std::sort(begin(yterms),end(yterms),[](auto v1, auto v2){
+               return v1.amp > v2.amp;
+           });
+           time=0;
+           timer.start();
+       }
+       time=0;
+       timer.start();
+
+    }
+    Widget(){
+
+
          timer.connect(&timer,&QTimer::timeout,[=](){
-            time+=  Tou/terms.size();
+            time+=  Tou/qMax(terms.size(),xterms.size());
             time = (time >Tou)?0.:time;
-            if(!time){targetWave.clear();}
+            if(!time){timer.stop();/*targetWave.clear();*/}
             update();
 
         });
+
         timer.setSingleShot(false);
-        timer.setInterval(30ms);
-        timer.start();
+        timer.setInterval(5ms);
+        processNextImage();
+
 
     }
     void paintEvent(QPaintEvent* )
     {
         QPainter p(this);
-        p.fillRect(rect(),Qt::white);
+        p.fillRect(rect(),Qt::black);
         QPen pen(Qt::red);
         pen.setWidth(3);
         p.setPen(pen);
@@ -304,13 +396,32 @@ struct Widget:public QWidget{
         auto drawWave=make_drawWave<QPainter,QPointF,QPainterPath>(p);
         auto drawTrace=make_drawTrace<QPainter,QPointF,QPainterPath>(p);
         pen.setWidth(5);
-        pen.setColor(Qt::green);
+        pen.setColor(QColor(255,0,0,125));
         p.setPen(pen);
+        if(comDraw){
+            auto values1 = make_Values(time,middle,terms,epiCircleDraw,5000)(targetWave);
+            pen.setColor(Qt::white);
+            p.setPen(pen);
+            drawTrace(values1);
+        }else{
+            auto values1 = make_Values(time,middle+QPointF(200,-300),xterms,epiCircleDraw,5000)(targetWaveX);
+            auto values2 = make_Values(time,middle+QPointF(-400,100) ,yterms,epiCircleDraw,5000)(targetWaveY);
+            std::vector<FType> dest;
+            combine(values1,values2,std::back_inserter(dest),[](auto val1, auto val2){
+                return FType{val1.real(), val2.imag()};
+             });
+            p.drawLine(QPointF(values1.front().real(),values1.front().imag()),QPointF(dest.front().real(),dest.front().imag()));
+            p.drawLine(QPointF(values2.front().real(),values2.front().imag()),QPointF(dest.front().real(),dest.front().imag()));
+            pen.setColor(Qt::white);
+            p.setPen(pen);
+            drawTrace(dest);
+        }
+    }
+    void mousePressEvent(QMouseEvent *event)
+    {
+        comDraw=!comDraw;
+        processNextImage();
 
-        auto values1 = make_Values(time,middle,terms,epiCircleDraw)(targetWave);
-        pen.setColor(Qt::red);
-        p.setPen(pen);
-        drawTrace(values1);
     }
 
 };

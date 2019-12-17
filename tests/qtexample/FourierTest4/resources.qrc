@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>bat.json</file>
+        <file>data.json</file>
+        <file>dude.json</file>
+        <file>hand.json</file>
+        <file>horse.json</file>
+        <file>treble.json</file>
+    </qresource>
+</RCC>

@@ -39,3 +39,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DISTFILES += \
     data.json
+
+RESOURCES += \
+    resources.qrc
