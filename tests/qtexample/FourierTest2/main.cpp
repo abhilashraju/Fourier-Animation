@@ -47,8 +47,8 @@ struct Widget:public QWidget{
     void paintEvent(QPaintEvent *event)
     {
         QPainter p(this);
-        p.fillRect(rect(),Qt::white);
-        QPen pen(Qt::red);
+        p.fillRect(rect(),Qt::black);
+        QPen pen(Qt::white);
         pen.setWidth(3);
         p.setPen(pen);
         QPointF offset(400,400);

@@ -164,8 +164,8 @@ inline FSymbol operator +(FSymbol sym, FTerm term){
         return per;
     };
 }
-template<typename R1,typename R2,typename R3,typename CombFunc >
-void combine (R1 r1,R2 r2, R3 dest, CombFunc func){
+template<typename R1,typename R2,typename InputIter,typename CombFunc >
+void combine (const R1& r1,const R2& r2, InputIter dest, CombFunc func){
          std::inner_product(begin(r1),end(r1),begin(r2),dest,[](auto dest,auto val){
            dest=val;return dest;
          },func);

@@ -304,7 +304,7 @@ struct Widget:public QWidget{
     void paintEvent(QPaintEvent* )
     {
         QPainter p(this);
-        p.fillRect(rect(),Qt::white);
+        p.fillRect(rect(),Qt::black);
         QPen pen(Qt::red);
         pen.setWidth(3);
         p.setPen(pen);
@@ -315,7 +315,7 @@ struct Widget:public QWidget{
         auto drawWave=make_drawWave<QPainter,QPointF,QPainterPath>(p);
         auto drawTrace=make_drawTrace<QPainter,QPointF,QPainterPath>(p);
         pen.setWidth(5);
-        pen.setColor(Qt::green);
+        pen.setColor(Qt::white);
         p.setPen(pen);
 
         auto values1 = make_Values(time,middle+QPointF(200,-200),ftofx,epiCircleDraw)(targetWavex);

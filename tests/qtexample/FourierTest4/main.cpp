@@ -396,7 +396,7 @@ struct Widget:public QWidget{
         auto drawWave=make_drawWave<QPainter,QPointF,QPainterPath>(p);
         auto drawTrace=make_drawTrace<QPainter,QPointF,QPainterPath>(p);
         pen.setWidth(5);
-        pen.setColor(QColor(255,0,0,125));
+        pen.setColor(QColor(255,0,0,255));
         p.setPen(pen);
         if(comDraw){
             auto values1 = make_Values(time,middle,terms,epiCircleDraw,5000)(targetWave);

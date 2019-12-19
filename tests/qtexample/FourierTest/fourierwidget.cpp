@@ -24,12 +24,12 @@ void FourierWidget::paintEvent(QPaintEvent *event)
 {
 
     QPainter p(this);
-    p.fillRect(rect(),Qt::white);
+    p.fillRect(rect(),Qt::black);
 
 
 
     QPointF middle = QPointF(300,height()/2);
-    QPen pen(Qt::green);
+    QPen pen(Qt::white);
     pen.setWidth(2);
     p.setPen(pen);
     auto epiCircleDraw =make_epiCircleDraw<QPainter,QPointF>(p);

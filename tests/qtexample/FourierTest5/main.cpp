@@ -34,7 +34,7 @@ struct Widget:public QWidget{
     void paintEvent(QPaintEvent* )
     {
         QPainter p(this);
-        p.fillRect(rect(),Qt::white);
+        p.fillRect(rect(),Qt::black);
         QPen pen(Qt::red);
         pen.setWidth(3);
         p.setPen(pen);
@@ -59,7 +59,7 @@ struct Widget:public QWidget{
             }
             p.drawPath(path);
         }
-        pen.setColor(Qt::green);
+        pen.setColor(Qt::white);
         p.setPen(pen);
         if(terms.size()){
             auto epiCircleDraw =make_epiCircleDraw<QPainter,QPointF>(p);
