@@ -17,3 +17,4 @@ Using Qt Version.
   build 
   run
   
+![bat](https://github.com/abhilashraju/FourierSeries/blob/master/demo/bat.gif)
