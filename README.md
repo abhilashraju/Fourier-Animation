@@ -18,4 +18,4 @@ Using Qt Version.
   run
   
 ![bat](https://github.com/abhilashraju/FourierSeries/blob/master/demo/bat.gif) ![horse](https://github.com/abhilashraju/FourierSeries/blob/master/demo/horse.gif)
-![bat](https://github.com/abhilashraju/FourierSeries/blob/master/demo/dude.gif)
+![bat](https://github.com/abhilashraju/FourierSeries/blob/master/demo/dude.gif) ![bat](https://github.com/abhilashraju/FourierSeries/blob/master/demo/hand.gif)
