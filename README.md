@@ -11,7 +11,8 @@ To run the cosole version do the following
   ./a.out
 ```
 
-You can try the Graphical example if are willing to depend on QT. Or you can use base libray with any other Graphical toolkit of your choice to draw your own animaitons.
+You can try the Graphical example if you are willing to depend on QT. Or you can use base libray with any other Graphical toolkit of your choice to draw your own animaitons.
+
 Using Qt Version.
 ```
   Install Qt from https://www.qt.io/download?hsCtaTracking=f24f249b-61fb-4dec-9869-50512342f8d9%7Cf3adf380-4740-4f7e-9e49-d06fa99445fa
