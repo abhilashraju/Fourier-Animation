@@ -1,5 +1,5 @@
 # FourierSeries
-A generic algorithm for Fourier series evaluation and drawing the approximation.This is just a hobby project to demonstate an application of 
+A generic algorithm for Fourier Synthesis and Analysis.This is just a hobby project to demonstate an application of 
 1) std::accumulate algorithm in the evaluation of fourier series (Fourier Synthesis)
 2) std::inner_prodcut for the fourier transform (Fourier Analysis)
 
