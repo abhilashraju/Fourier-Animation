@@ -1,5 +1,11 @@
 # FourierSeries
-A generic algorithm for Fourier Synthesis and Analysis.This is just a hobby project to demonstate an application of 
+A generic algorithm for Fourier Synthesis and Analysis.
+
+![bat](https://github.com/abhilashraju/FourierSeries/blob/master/demo/bat.gif) ![horse](https://github.com/abhilashraju/FourierSeries/blob/master/demo/horse.gif)
+![bat](https://github.com/abhilashraju/FourierSeries/blob/master/demo/dude.gif) ![bat](https://github.com/abhilashraju/FourierSeries/blob/master/demo/hand.gif)
+
+
+This is just a hobby project to demonstate an application of 
 1) std::accumulate algorithm in the evaluation of fourier series (Fourier Synthesis)
 2) std::inner_prodcut for the fourier transform (Fourier Analysis)
 
@@ -47,5 +53,4 @@ int main(int argc, char *argv[])
        return 0;
 }
 ```
-![bat](https://github.com/abhilashraju/FourierSeries/blob/master/demo/bat.gif) ![horse](https://github.com/abhilashraju/FourierSeries/blob/master/demo/horse.gif)
-![bat](https://github.com/abhilashraju/FourierSeries/blob/master/demo/dude.gif) ![bat](https://github.com/abhilashraju/FourierSeries/blob/master/demo/hand.gif)
+
