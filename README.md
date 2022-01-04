@@ -1,5 +1,8 @@
 # FourierSeries
-A generic algorithm for Fourier series evaluation and drawing the approximation.This is just a hobby project to demonstate an application of std::accumulate algorithm in the evaluation of fourier series.It is just an easy to use header only library.The library has dependency over C++14.
+A generic algorithm for Fourier series evaluation and drawing the approximation.This is just a hobby project to demonstate an application of 
+1) std::accumulate algorithm in the evaluation of fourier series (Fourier Synthesis)
+2) std::inner_prodcut for the fourier transform (Fourier Analysis)
+It is just an easy to use header only library.The library has dependency over C++14.
 To run the cosole version do the following
 ```
   cd path_to_repo/tests/justmain
@@ -17,6 +20,7 @@ Using Qt Version.
   build 
   run
  ``` 
+ Example
  
 ![bat](https://github.com/abhilashraju/FourierSeries/blob/master/demo/bat.gif) ![horse](https://github.com/abhilashraju/FourierSeries/blob/master/demo/horse.gif)
 ![bat](https://github.com/abhilashraju/FourierSeries/blob/master/demo/dude.gif) ![bat](https://github.com/abhilashraju/FourierSeries/blob/master/demo/hand.gif)
