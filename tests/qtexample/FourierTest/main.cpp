@@ -1,6 +1,6 @@
 #include "fourierwidget.h"
 #include <QApplication>
-
+#include <qpainterpath.h>
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);

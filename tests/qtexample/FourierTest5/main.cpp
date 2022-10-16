@@ -9,6 +9,7 @@
 #include <numeric>
 #include "fourierdraw.h"
 #include <QMouseEvent>
+#include <QPainterPath>
 using namespace FourierLiterals;
 
 struct Widget:public QWidget{

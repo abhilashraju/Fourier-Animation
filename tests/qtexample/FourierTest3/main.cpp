@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <numeric>
 #include "fourierdraw.h"
+#include <QPainterPath>
 using namespace FourierLiterals;
 
 #include <nlohmann/json.hpp>

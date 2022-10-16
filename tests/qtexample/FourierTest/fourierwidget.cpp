@@ -1,6 +1,7 @@
 #include "fourierwidget.h"
 #include <QPainter>
 #include "fourierdraw.h"
+#include <QPainterPath>
 FourierWidget::FourierWidget(QWidget *parent) :
     QWidget(parent)
 

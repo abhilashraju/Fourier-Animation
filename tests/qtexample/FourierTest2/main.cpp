@@ -7,6 +7,7 @@
 #include <QPainter>
 #include <QDebug>
 #include "fourierdraw.h"
+#include <QPainterPath>
 using namespace FourierLiterals;
 
 struct Widget:public QWidget{
